@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="es-SV">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Procesos Electorales y Régimen Legal de JRV - El Salvador</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces - Charter Theme */
+      --background: #f7f4ec;               /* warm cream paper */
+      --surface-container-low: #fffdf8;    /* bright leaf: cards, panels */
+      --surface-container: #ece5d4;        /* deeper cream: secondary elements */
+      --surface-container-high: #e3dac4;   /* header accents, active tabs */
+
+      /* Ink */
+      --on-surface: #1c1f26;               /* near-black ink */
+      --on-surface-variant: #4f5360;       /* graphite */
+      --on-surface-muted: #6e7382;         /* subtle labels */
+
+      /* Rules and Brass */
+      --outline: #b08d57;                  /* brass */
+      --outline-variant: #d9cfb8;          /* pale brass hairline */
+      --brass-dark: #8a6a35;
+
+      /* Accents */
+      --primary: #14213d;                  /* deep institutional navy */
+      --on-primary: #f7f4ec;               /* cream on navy */
+      --primary-container: #e3e6ee;        /* pale navy wash */
+      --on-primary-container: #14213d;
+      
+      --secondary: #2d5a4a;                /* bottle green / positive */
+      --on-secondary: #f7f4ec;
+      --secondary-container: #e1ede8;
+      
+      --tertiary: #8a6a35;                 /* dark brass text */
+      --error: #9b2c2c;
+      --on-error: #f7f4ec;
+      --error-container: #fae8e8;
+
+      --positive: #2d5a4a;
+      --positive-container: #e3f0eb;
+      --warning: #a35200;
+      --warning-container: #fff3e6;
+
+      --focus: #14213d;
+
+      /* Typography scale (Charter Tool) */
+      --font-headline: 'Libre Caslon Text', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-label: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+      --display-size: clamp(1.85rem, 1.4rem + 1.3vw, 2.35rem);
+      --headline-size: clamp(1.28rem, 1.12rem + 0.55vw, 1.55rem);
+      --subhead-size: clamp(1.06rem, 1rem + 0.25vw, 1.2rem);
+      --body-size: clamp(0.92rem, 0.88rem + 0.15vw, 1rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.25rem;
+      --space-2xl: 3.5rem;
+      --space-3xl: 5rem;           /* faltaba: invalidaba el margin de .app-main y el contenido no se centraba */
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-short: 180ms;
+      --dur-long: 350ms;
+
+      /* Shape and border treatments */
+      --rounded: 0.125rem;
+      --brass-rule: 2px solid var(--outline);
+      --hairline: 1px solid var(--outline-variant);
+      --leaf-underline: 0 1px 0 var(--outline-variant);
+    }
+
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography Utilities */
+    h1, h2, h3, .font-caslon {
+      font-family: var(--font-headline);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    h1 {
+      font-size: var(--display-size);
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: var(--headline-size);
+      line-height: 1.25;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: var(--subhead-size);
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    p {
+      font-size: var(--body-size);
+      color: var(--on-surface);
+      max-width: 72ch;
+    }
+
+    .kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+    }
+
+    .tabular-numbers {
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    /* Institutional Header Banner */
+    .header-banner {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border-bottom: 3px solid var(--outline);
+      padding: var(--space-xl) var(--space-lg);
+      position: relative;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-lg);
+      align-items: center;
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .header-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--outline) 85%, var(--on-primary));
+    }
+
+    .header-title {
+      color: var(--on-primary);
+      font-size: var(--display-size);
+      line-height: 1.12;
+      margin-top: var(--space-xs);
+    }
+
+    .header-title span.brass {
+      color: color-mix(in srgb, var(--outline) 75%, var(--on-primary));
+      font-style: italic;
+    }
+
+    .header-desc {
+      color: var(--surface-container-high);
+      font-size: 0.95rem;
+      margin-top: var(--space-xs);
+      max-width: 65ch;
+      line-height: 1.45;
+    }
+
+    /* Score and Status Tracker Widget in Header */
+    .score-badge-card {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--outline);
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--rounded);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      min-width: 220px;
+      text-align: right;
+    }
+
+    .score-badge-card .score-label {
+      font-size: var(--label-size);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--outline-variant);
+    }
+
+    .score-badge-card .score-value {
+      font-family: var(--font-headline);
+      font-size: 2.2rem;
+      line-height: 1;
+      color: var(--on-primary);
+    }
+
+    .score-badge-card .score-sub {
+      font-size: 0.78rem;
+      color: var(--surface-container-high);
+    }
+
+    /* Top Navigation Tabs */
+    .main-nav-wrapper {
+      background-color: var(--surface-container);
+      border-bottom: var(--hairline);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 4px rgba(20, 33, 61, 0.06);
+    }
+
+    .main-nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: var(--space-xs);
+      padding: 0 var(--space-md);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .nav-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      padding: var(--space-md) var(--space-md);
+      font-family: var(--font-label);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      white-space: nowrap;
+      transition: color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+    }
+
+    .nav-btn:hover {
+      color: var(--primary);
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background-color: var(--surface-container-low);
+    }
+
+    .nav-btn:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+
+    .badge-counter {
+      background-color: var(--primary-container);
+      color: var(--primary);
+      padding: 0.1rem 0.45rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: var(--rounded);
+    }
+
+    /* Main Container */
+    .app-main {
+      max-width: 1200px;
+      margin: var(--space-xl) auto var(--space-3xl);
+      padding: 0 var(--space-md);
+    }
+
+    /* Section Panels */
+    .tab-panel {
+      display: none;
+      animation: fadeIn var(--dur-long) var(--ease-out);
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Card & Frame Styles */
+    .charter-card {
+      background-color: var(--surface-container-low);
+      border: var(--hairline);
+      border-top: var(--brass-rule);
+      border-radius: var(--rounded);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      box-shadow: 0 1px 3px rgba(28, 31, 38, 0.04);
+    }
+
+    .section-lead {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-lg);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-md);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .section-lead-text h2 {
+      margin-bottom: var(--space-xs);
+    }
+
+    .section-lead-text p {
+      color: var(--on-surface-variant);
+      font-size: 0.95rem;
+    }
+
+    /* Scenario Simulation Engine */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .scenario-item {
+      background-color: var(--surface-container-low);
+      border: var(--hairline);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--rounded);
+      padding: var(--space-lg);
+      transition: box-shadow var(--dur-short) var(--ease-out);
+    }
+
+    .scenario-item.solved-correct {
+      border-left-color: var(--positive);
+    }
+
+    .scenario-item.solved-incorrect {
+      border-left-color: var(--error);
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-sm);
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .scenario-tag {
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--rounded);
+      background-color: var(--surface-container);
+      color: var(--on-surface-variant);
+    }
+
+    .scenario-tag.legal-art {
+      background-color: var(--primary-container);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .scenario-title {
+      font-family: var(--font-headline);
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .scenario-facts {
+      background-color: var(--background);
+      border-left: 2px solid var(--outline);
+      padding: var(--space-md);
+      margin-bottom: var(--space-md);
+      font-size: 0.93rem;
+      color: var(--on-surface);
+      line-height: 1.5;
+    }
+
+    .scenario-question {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: var(--space-md);
+      font-size: 0.98rem;
+    }
+
+    .options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .option-btn {
+      appearance: none;
+      background-color: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      text-align: left;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--on-surface);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background-color: var(--surface-container);
+      border-color: var(--outline);
+    }
+
+    .option-btn:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .option-btn.selected-correct {
+      background-color: var(--positive-container);
+      border-color: var(--positive);
+      font-weight: 500;
+    }
+
+    .option-btn.selected-incorrect {
+      background-color: var(--error-container);
+      border-color: var(--error);
+      color: var(--error);
+    }
+
+    .option-marker {
+      width: 1.5rem;
+      height: 1.5rem;
+      min-width: 1.5rem;
+      border: 1px solid var(--outline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary);
+      background-color: var(--background);
+    }
+
+    .option-btn.selected-correct .option-marker {
+      background-color: var(--positive);
+      color: var(--on-secondary);
+      border-color: var(--positive);
+    }
+
+    .option-btn.selected-incorrect .option-marker {
+      background-color: var(--error);
+      color: var(--on-error);
+      border-color: var(--error);
+    }
+
+    .feedback-box {
+      display: none;
+      border-radius: var(--rounded);
+      padding: var(--space-md);
+      margin-top: var(--space-md);
+      animation: fadeIn var(--dur-short) var(--ease-out);
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.correct {
+      background-color: var(--positive-container);
+      border: 1px solid var(--positive);
+      color: #1a4335;
+    }
+
+    .feedback-box.incorrect {
+      background-color: var(--error-container);
+      border: 1px solid var(--error);
+      color: #741d1d;
+    }
+
+    .feedback-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-xs);
+    }
+
+    .feedback-rationale {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .feedback-legal {
+      margin-top: var(--space-sm);
+      padding-top: var(--space-xs);
+      border-top: 1px dashed rgba(0, 0, 0, 0.15);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* Filter Bar for Scenarios */
+    .filter-bar {
+      display: flex;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      appearance: none;
+      background-color: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      border-radius: var(--rounded);
+      transition: background-color var(--dur-short) var(--ease-out);
+    }
+
+    .filter-pill.active {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+
+    /* Ballot Visual Classifier Module */
+    .classifier-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .classifier-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ballot-canvas-card {
+      background-color: var(--background);
+      border: var(--brass-rule);
+      padding: var(--space-md);
+      position: relative;
+    }
+
+    .ballot-header {
+      border-bottom: 2px solid var(--outline);
+      padding-bottom: var(--space-sm);
+      margin-bottom: var(--space-md);
+      text-align: center;
+    }
+
+    .ballot-stamp-area {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--on-surface-variant);
+      border-bottom: var(--hairline);
+      padding-bottom: var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+
+    .ballot-svg-container {
+      background: #ffffff;
+      border: 1px solid var(--outline-variant);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      padding: var(--space-md);
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .classifier-controls {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .ballot-selector-list {
+      display: flex;
+      gap: var(--space-xs);
+      overflow-x: auto;
+      padding-bottom: var(--space-xs);
+      margin-bottom: var(--space-sm);
+      scrollbar-width: thin;
+    }
+
+    .ballot-thumb-btn {
+      appearance: none;
+      background-color: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      transition: background-color var(--dur-short) var(--ease-out);
+    }
+
+    .ballot-thumb-btn.active {
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+
+    .category-decision-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-sm);
+    }
+
+    .decision-btn {
+      appearance: none;
+      background-color: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      padding: var(--space-md);
+      border-radius: var(--rounded);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .decision-btn small {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--on-surface-variant);
+    }
+
+    .decision-btn:hover:not(:disabled) {
+      background-color: var(--surface-container);
+      border-color: var(--outline);
+    }
+
+    .decision-btn.correct-eval {
+      background-color: var(--positive-container);
+      border-color: var(--positive);
+      color: #1a4335;
+    }
+
+    .decision-btn.incorrect-eval {
+      background-color: var(--error-container);
+      border-color: var(--error);
+      color: #741d1d;
+    }
+
+    /* Math Audit / Cuadratura SEP Module */
+    .audit-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+    }
+
+    @media (max-width: 860px) {
+      .audit-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calc-card {
+      background-color: var(--surface-container-low);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-lg);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .form-label span.subtext {
+      font-weight: 400;
+      color: var(--on-surface-muted);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded);
+      background-color: var(--background);
+      color: var(--on-surface);
+    }
+
+    .form-input:focus {
+      outline: 2px solid var(--focus);
+      background-color: #ffffff;
+    }
+
+    .calc-summary-panel {
+      background-color: var(--background);
+      border: 2px solid var(--outline);
+      padding: var(--space-lg);
+      border-radius: var(--rounded);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .audit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: var(--space-xs) 0;
+      border-bottom: 1px dashed var(--outline-variant);
+      font-size: 0.9rem;
+    }
+
+    .audit-row.highlight {
+      border-bottom: 2px solid var(--outline);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--primary);
+    }
+
+    .audit-row .val {
+      font-family: var(--font-headline);
+      font-variant-numeric: tabular-nums;
+      font-size: 1.15rem;
+    }
+
+    .balance-badge {
+      padding: var(--space-md);
+      border-radius: var(--rounded);
+      text-align: center;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      align-items: center;
+    }
+
+    .balance-badge.balanced {
+      background-color: var(--positive-container);
+      border: 1px solid var(--positive);
+      color: #1a4335;
+    }
+
+    .balance-badge.discrepancy {
+      background-color: var(--error-container);
+      border: 1px solid var(--error);
+      color: #741d1d;
+    }
+
+    /* Day D Timeline Explorer */
+    .timeline-container {
+      position: relative;
+      padding-left: var(--space-xl);
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--outline-variant);
+    }
+
+    .timeline-node {
+      position: relative;
+      margin-bottom: var(--space-xl);
+    }
+
+    .timeline-node:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: calc(-1 * var(--space-xl) + 1px);
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--background);
+      border: 2px solid var(--outline);
+      transition: all var(--dur-short) var(--ease-out);
+    }
+
+    .timeline-node.highlight-node .timeline-marker {
+      background: var(--primary);
+      border-color: var(--outline);
+      box-shadow: 0 0 0 4px var(--primary-container);
+    }
+
+    .timeline-card {
+      background-color: var(--surface-container-low);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      padding: var(--space-md) var(--space-lg);
+    }
+
+    .timeline-time-badge {
+      display: inline-block;
+      font-size: var(--label-size);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--on-primary);
+      background-color: var(--primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--rounded);
+      margin-bottom: var(--space-xs);
+    }
+
+    .timeline-title {
+      font-family: var(--font-headline);
+      font-size: 1.15rem;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .timeline-details {
+      font-size: 0.9rem;
+      color: var(--on-surface-variant);
+      line-height: 1.5;
+    }
+
+    .timeline-details ul {
+      margin-left: var(--space-md);
+      margin-top: var(--space-xs);
+    }
+
+    .timeline-details li {
+      margin-bottom: 4px;
+    }
+
+    /* Actors and Roles Matrix */
+    .roles-table-wrapper {
+      overflow-x: auto;
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      background-color: var(--surface-container-low);
+    }
+
+    .roles-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .roles-table th {
+      background-color: var(--surface-container-high);
+      color: var(--primary);
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--outline);
+    }
+
+    .roles-table td {
+      padding: var(--space-md);
+      border-bottom: var(--hairline);
+      vertical-align: top;
+      color: var(--on-surface);
+    }
+
+    .roles-table tr:hover td {
+      background-color: var(--surface-container);
+    }
+
+    .role-title {
+      font-weight: 700;
+      color: var(--primary);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .badge-limit {
+      display: inline-block;
+      background-color: var(--error-container);
+      color: var(--error);
+      padding: 2px 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: var(--rounded);
+      margin-top: var(--space-xs);
+    }
+
+    .badge-perm {
+      display: inline-block;
+      background-color: var(--positive-container);
+      color: var(--positive);
+      padding: 2px 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: var(--rounded);
+      margin-top: var(--space-xs);
+    }
+
+    /* Acta Color Distribution Guide */
+    .color-protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .color-card {
+      background-color: var(--surface-container-low);
+      border: var(--hairline);
+      border-radius: var(--rounded);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .color-band {
+      height: 10px;
+      width: 100%;
+    }
+
+    .color-card-body {
+      padding: var(--space-md);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .color-entity {
+      font-family: var(--font-headline);
+      font-size: 1.1rem;
+      color: var(--primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .color-desc {
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+      line-height: 1.4;
+      margin-bottom: var(--space-sm);
+    }
+
+    .color-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      display: inline-block;
+      align-self: flex-start;
+      border-radius: var(--rounded);
+    }
+
+    /* Final Certification Panel */
+    .cert-card {
+      background: #ffffff;
+      border: 3px double var(--outline);
+      padding: var(--space-xl);
+      text-align: center;
+      max-width: 800px;
+      margin: var(--space-xl) auto;
+      box-shadow: 0 4px 15px rgba(20, 33, 61, 0.08);
+      position: relative;
+    }
+
+    .cert-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.03;
+      pointer-events: none;
+      font-size: 15rem;
+      font-family: var(--font-headline);
+      color: var(--primary);
+    }
+
+    .cert-kicker {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--tertiary);
+      font-weight: 700;
+      margin-bottom: var(--space-xs);
+    }
+
+    .cert-heading {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .cert-body {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: var(--on-surface);
+      margin: 0 auto var(--space-lg);
+      max-width: 60ch;
+    }
+
+    .cert-meta {
+      display: flex;
+      justify-content: space-around;
+      border-top: 1px solid var(--outline-variant);
+      padding-top: var(--space-lg);
+      margin-top: var(--space-lg);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .cert-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cert-meta-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+    }
+
+    .cert-meta-val {
+      font-family: var(--font-headline);
+      font-size: 1.15rem;
+      color: var(--primary);
+    }
+
+    /* Utility Buttons */
+    .btn-charter {
+      appearance: none;
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border: 1px solid var(--primary);
+      padding: var(--space-sm) var(--space-md);
+      font-family: var(--font-label);
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      border-radius: var(--rounded);
+      transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+    }
+
+    .btn-charter:hover {
+      background-color: #1e335e;
+      border-color: #1e335e;
+    }
+
+    .btn-charter:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .btn-charter-secondary {
+      background-color: var(--surface-container);
+      color: var(--primary);
+      border-color: var(--outline-variant);
+    }
+
+    .btn-charter-secondary:hover {
+      background-color: var(--surface-container-high);
+      border-color: var(--outline);
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 640px) {
+      .header-inner {
+        grid-template-columns: 1fr;
+      }
+      .score-badge-card {
+        text-align: left;
+      }
+      .category-decision-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+/* ==========================================================================
+   Añadidos de la versión PHP
+   ========================================================================== */
+.skip-link {
+  position: absolute; left: -999px; top: 0; z-index: 100;
+  background: var(--primary); color: var(--on-primary); padding: .6rem 1rem;
+}
+.skip-link:focus { left: 0; }
+
+.app-footer {
+  max-width: 1200px; margin: var(--space-xl) auto 0; padding: var(--space-lg) var(--space-md);
+  border-top: 1px solid var(--outline-variant); text-align: center;
+  font-size: .8rem; color: var(--on-surface-muted);
+}
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); z-index: 50;
+  background: var(--error); color: var(--on-error); padding: .7rem 1.1rem;
+  border-radius: 6px; font-size: .9rem; box-shadow: 0 6px 20px rgba(0,0,0,.25);
+}
+.toast[hidden] { display: none; }
+
+.cert-name-wrap { max-width: 420px; margin: var(--space-md) auto 0; text-align: left; }
+.cert-name-wrap .cert-meta-label { display: block; margin-bottom: .35rem; }
+.cert-name-print {
+  font-family: 'Libre Caslon Text', serif; font-size: 1.5rem; text-align: center;
+  margin: var(--space-md) 0 0; color: var(--primary);
+}
+.cert-name-print[hidden] { display: none; }
+
+/* Impresión: solo la constancia */
+@media print {
+  body * { visibility: hidden; }
+  #panel-certificado, #panel-certificado * { visibility: visible; }
+  #panel-certificado { display: block !important; position: absolute; inset: 0; }
+  .no-print { display: none !important; }
+  .cert-name-print:not([hidden]) { display: block; }
+  .cert-card { box-shadow: none; border: 2px solid var(--outline); }
+}
+
+/* Evita que contenido ancho (selector de boletas, tablas) ensanche las columnas de la cuadrícula */
+.classifier-workspace > *, .scenario-grid > * { min-width: 0; }
+.main-nav-wrapper, .main-nav { max-width: 100%; }
+
+</style>
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="header-banner">
+  <div class="header-inner">
+    <div class="header-titles">
+      <div class="header-kicker">
+        <i data-lucide="scale" style="width: 14px; height: 14px;"></i>
+        República de El Salvador • Tribunal Supremo Electoral
+      </div>
+      <h1 class="header-title">
+        Simulador Jurídico y Práctico de <span class="brass">Junta Receptora de Votos (JRV)</span>
+      </h1>
+      <p class="header-desc">
+        Entorno de adiestramiento dinámico para la toma de decisiones complejas en mesa electoral: calificación de votos nulos, impugnados y cruzados, preservación del quórum, límites de vigilancia y auditoría del Sistema de Escrutinio Preliminar (SEP) con apego riguroso al Código Electoral.
+      </p>
+    </div>
+
+    <div class="score-badge-card" aria-live="polite">
+      <span class="score-label">Competencia de Mesa</span>
+      <div class="score-value tabular-numbers" id="headerScorePercent">0%</div>
+      <div class="score-sub" id="headerSolvedStats">0 de 8 Casos Resueltos</div>
+    </div>
+  </div>
+</header>
+  <nav class="main-nav-wrapper" aria-label="Navegación del simulador">
+  <div class="main-nav" role="tablist">
+          <button type="button" role="tab" class="nav-btn" id="tab-casos"
+              data-tab="casos" aria-controls="panel-casos" aria-selected="false">
+        <i data-lucide="briefcase" style="width: 16px; height: 16px;"></i>
+        1. Casos Prácticos de Mesa                  <span class="badge-counter" id="badgeCasos">8</span>
+              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-clasificador"
+              data-tab="clasificador" aria-controls="panel-clasificador" aria-selected="false">
+        <i data-lucide="check-square" style="width: 16px; height: 16px;"></i>
+        2. Clasificador de Papeletas                  <span class="badge-counter" id="badgeBoletas">6 Boletas</span>
+              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-cuadratura"
+              data-tab="cuadratura" aria-controls="panel-cuadratura" aria-selected="false">
+        <i data-lucide="calculator" style="width: 16px; height: 16px;"></i>
+        3. Cuadratura SEP (700 Votos)              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-cronograma"
+              data-tab="cronograma" aria-controls="panel-cronograma" aria-selected="false">
+        <i data-lucide="clock" style="width: 16px; height: 16px;"></i>
+        4. Fases del Día D (5:00 a 17:00+)              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-roles"
+              data-tab="roles" aria-controls="panel-roles" aria-selected="false">
+        <i data-lucide="users" style="width: 16px; height: 16px;"></i>
+        5. Roles: JRV, JVE, Fiscal y Observador              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-actas"
+              data-tab="actas" aria-controls="panel-actas" aria-selected="false">
+        <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+        6. Código de Colores de Actas              </button>
+          <button type="button" role="tab" class="nav-btn" id="tab-certificado"
+              data-tab="certificado" aria-controls="panel-certificado" aria-selected="false">
+        <i data-lucide="award" style="width: 16px; height: 16px;"></i>
+        7. Constancia y Evaluación              </button>
+      </div>
+</nav>
+
+  <main class="app-main" id="main">
+          <section id="panel-casos" class="tab-panel" role="tabpanel" aria-labelledby="tab-casos">
+  <div class="section-lead">
+    <div class="section-lead-text">
+      <span class="kicker">Dilemas Reales del Evento Electoral</span>
+      <h2>Casos Prácticos de Resolución Inmediata en Mesa</h2>
+      <p>
+        Enfrente los incidentes jurídicos más controvertidos del proceso electoral en El Salvador. Seleccione la respuesta legal correcta y consulte la fundamentación exacta según el Código Electoral (CE) y la Constitución.
+      </p>
+    </div>
+    <div class="filter-bar">
+      <button type="button" class="filter-pill active" data-filter="all">Todos (8)</button>
+                                      <button type="button" class="filter-pill" data-filter="votacion">Votación e Identificación (3)</button>
+                                <button type="button" class="filter-pill" data-filter="escrutinio">Escrutinio y Clasificación (3)</button>
+                                <button type="button" class="filter-pill" data-filter="seguridad">Disciplina y Fiscales (2)</button>
+                  </div>
+  </div>
+
+  <div class="scenario-grid" id="scenariosContainer">
+    <!-- Se renderiza desde assets/js/scenarios.js -->
+  </div>
+</section>
+              <section id="panel-clasificador" class="tab-panel">
+      <div class="section-lead">
+        <div class="section-lead-text">
+          <span class="kicker">Simulación Visual de Escrutinio Preliminar</span>
+          <h2>Banco Interactivo de Clasificación de Boletas Electorales</h2>
+          <p>
+            Examine la papeleta desdoblada tal como la extrae el Presidente de la JRV en la mesa de trabajo (Art. 200 lit. b CE). Clasifique si es Voto Válido Entero, Preferente, Cruzado, Nulo, Abstención o si requiere Validación Excepcional (Art. 208 CE).
+          </p>
+        </div>
+      </div>
+
+      <div class="classifier-workspace">
+        <!-- Left: Ballot visual canvas -->
+        <div class="ballot-canvas-card">
+          <div class="ballot-header">
+            <span class="kicker" id="ballotHeaderElection">Elección de Diputados a la Asamblea Legislativa</span>
+            <div class="ballot-stamp-area">
+              <span id="ballotNumberBadge">Papeleta N° 0418 / JRV 7553</span>
+              <span id="ballotSecSealBadge">Reverso: Escudo + Sello TSE [Presente]</span>
+            </div>
+          </div>
+
+          <div class="ballot-svg-container" id="ballotSvgDisplay">
+            <!-- SVG Ballot Graphic will render here -->
+          </div>
+
+          <div style="margin-top: var(--space-md); font-size: 0.85rem; color: var(--on-surface-variant); background: var(--surface-container); padding: var(--space-sm); border-radius: var(--rounded);">
+            <strong style="color: var(--primary);">Observación en Mesa:</strong>
+            <span id="ballotContextDesc">El ciudadano marcó únicamente sobre la bandera del Partido A. Ninguna casilla de rostro individual ha sido señalada.</span>
+          </div>
+        </div>
+
+        <!-- Right: Classification controls and rationale -->
+        <div class="classifier-controls">
+          <div>
+            <span class="kicker">Seleccionar Boleta de Prueba</span>
+            <div class="ballot-selector-list" id="ballotSelectorBtns">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <div>
+            <span class="kicker">Decisión Jurisdiccional de la JRV</span>
+            <p style="font-size: 0.88rem; margin-bottom: var(--space-sm); color: var(--on-surface-variant);">
+              ¿Cuál es la calificación legal de esta papeleta según el Art. 203, 205, 206, 207 y 208 CE?
+            </p>
+            <div class="category-decision-grid" id="decisionButtonsGrid">
+              <button class="decision-btn" data-category="valido_entero">
+                <span>Voto Válido Entero</span>
+                <small>Marca única sobre bandera o planilla</small>
+              </button>
+              <button class="decision-btn" data-category="valido_preferente">
+                <span>Voto Válido Preferencial</span>
+                <small>Bandera y rostros del mismo contendiente</small>
+              </button>
+              <button class="decision-btn" data-category="valido_cruzado">
+                <span>Voto Válido Cruzado</span>
+                <small>Marcas divididas entre diferentes partidos</small>
+              </button>
+              <button class="decision-btn" data-category="nulo">
+                <span>Voto Nulo</span>
+                <small>Doble bandera, exceso de marcas, rasgadura</small>
+              </button>
+              <button class="decision-btn" data-category="abstencion">
+                <span>Abstención</span>
+                <small>Papeleta en blanco depositada en urna</small>
+              </button>
+              <button class="decision-btn" data-category="impugnado">
+                <span>Voto Impugnado</span>
+                <small>Duda no resuelta en mesa, va a TSE</small>
+              </button>
+              <button class="decision-btn" data-category="validacion_excepcional" style="grid-column: span 2;">
+                <span>Validación Excepcional (Art. 208 CE)</span>
+                <small>Falta firma o sello JRV pero cumple requisitos de autenticidad de reverso y correlativo</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Feedback for Ballot -->
+          <div id="ballotFeedbackBox" class="feedback-box">
+            <div class="feedback-title" id="ballotFeedbackTitle">
+              <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+              <span>Resultado de la Calificación</span>
+            </div>
+            <div class="feedback-rationale" id="ballotFeedbackRationale"></div>
+            <div class="feedback-legal" id="ballotFeedbackLegal"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+              <section id="panel-cuadratura" class="tab-panel">
+      <div class="section-lead">
+        <div class="section-lead-text">
+          <span class="kicker">Auditoría Matemática del Escrutinio</span>
+          <h2>Verificador de Cuadratura Numérica del SEP</h2>
+          <p>
+            Cada Junta Receptora de Votos recibe exactamente 700 papeletas por tipo de elección (Art. 186 CE). El Sistema de Escrutinio Preliminar (SEP) bloquea la emisión del acta oficial si las cifras físicas no coinciden exactamente. Experimente con los valores para verificar la ecuación obligatoria de mesa.
+          </p>
+        </div>
+        <button class="btn-charter btn-charter-secondary" data-preset="correct">
+          <i data-lucide="check-circle" style="width: 14px; height: 14px;"></i>
+          Cargar Caso Cuadrado
+        </button>
+        <button class="btn-charter btn-charter-secondary" data-preset="inconsistent">
+          <i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i>
+          Cargar Caso con Sobrevoto (+5)
+        </button>
+      </div>
+
+      <div class="audit-grid">
+        <div class="calc-card">
+          <h3 style="margin-bottom: var(--space-md); border-bottom: var(--hairline); padding-bottom: var(--space-xs);">
+            1. Inventario Físico de Materiales (Talonario)
+          </h3>
+          
+          <div class="form-group">
+            <label class="form-label" for="inpPapeletasEntregadas">
+              Papeletas Recibidas en Paquete Electoral
+              <span class="subtext">Fijo legal Art. 186 CE</span>
+            </label>
+            <input type="number" id="inpPapeletasEntregadas" class="form-input" value="700" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inpPadronFirmas">
+              Firmas y Huellas en Padrón de Votantes
+              <span class="subtext">Ciudadanos que ejercieron el sufragio</span>
+            </label>
+            <input type="number" id="inpPadronFirmas" class="form-input" value="482" min="0" max="700">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inpPapeletasSobrantes">
+              Papeletas Sobrantes (Inutilizadas rasgadas al medio)
+              <span class="subtext">Art. 200 lit. a CE</span>
+            </label>
+            <input type="number" id="inpPapeletasSobrantes" class="form-input" value="216" min="0" max="700">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inpPapeletasInutilizadas">
+              Papeletas Inutilizadas previas a la votación
+              <span class="subtext">Dañadas en talonario original (Art. 204 CE)</span>
+            </label>
+            <input type="number" id="inpPapeletasInutilizadas" class="form-input" value="2" min="0" max="100">
+          </div>
+
+          <h3 style="margin-top: var(--space-lg); margin-bottom: var(--space-md); border-bottom: var(--hairline); padding-bottom: var(--space-xs);">
+            2. Votos Extraídos de la Urna
+          </h3>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+            <div class="form-group">
+              <label class="form-label" for="inpVotosValidos">Votos Válidos Totales</label>
+              <input type="number" id="inpVotosValidos" class="form-input" value="465" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inpVotosNulos">Votos Nulos</label>
+              <input type="number" id="inpVotosNulos" class="form-input" value="11" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inpVotosAbstencion">Abstenciones (Blancos)</label>
+              <input type="number" id="inpVotosAbstencion" class="form-input" value="4" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inpVotosImpugnados">Votos Impugnados</label>
+              <input type="number" id="inpVotosImpugnados" class="form-input" value="2" min="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Calculation balance audit -->
+        <div class="calc-summary-panel">
+          <h3>Comprobación Algorítmica del SEP</h3>
+          <p style="font-size: 0.88rem; color: var(--on-surface-variant);">
+            El sistema ejecuta dos validaciones simultáneas para asegurar la certeza de la fe pública electoral salvadoreña:
+          </p>
+
+          <div class="audit-row">
+            <span>Total Papeletas Extraídas de la Urna:</span>
+            <span class="val" id="dispTotalUrna">482</span>
+          </div>
+
+          <div class="audit-row">
+            <span>Total Ciudadanos que Firmaron en Padrón:</span>
+            <span class="val" id="dispTotalPadron">482</span>
+          </div>
+
+          <div class="audit-row">
+            <span>Diferencia en Urna (Urna − Padrón):</span>
+            <span class="val" id="dispDiffUrnaPadron">0</span>
+          </div>
+
+          <div class="audit-row highlight">
+            <span>Inventario Global (Urna + Sobrantes + Inutilizadas):</span>
+            <span class="val" id="dispInventarioGlobal">700 / 700</span>
+          </div>
+
+          <div id="cuadraturaBadgeDisplay" class="balance-badge balanced">
+            <div style="display: flex; align-items: center; gap: var(--space-xs);">
+              <i data-lucide="check-circle-2" style="width: 20px; height: 20px;"></i>
+              <span style="font-size: 1.05rem;">CUADRATURA VÁLIDA DEL SISTEMA</span>
+            </div>
+            <span style="font-size: 0.85rem; font-weight: 400;" id="cuadraturaBadgeMsg">
+              Las papeletas en urna cuadran exactamente con el padrón de firmas y el total del paquete de 700 unidades. Se autoriza la generación del borrador de Acta de Cierre y Escrutinio.
+            </span>
+          </div>
+
+          <div style="background-color: var(--surface-container-low); padding: var(--space-md); border: var(--hairline); border-radius: var(--rounded); font-size: 0.85rem;">
+            <strong style="color: var(--primary); display: block; margin-bottom: 4px;">Fundamento Jurídico en Caso de Inconsistencia (Art. 200 y 209 CE):</strong>
+            Si existe discrepancia física, la JRV debe realizar un reconteo preliminar sobre la mesa antes de imprimir el acta final. En caso de no subsanarse, el SEP consigna la inconsistencia en el campo de incidencias y el paquete sellado se remite a la JEM para dirimir en el escrutinio final del TSE.
+          </div>
+        </div>
+      </div>
+    </section>
+              <section id="panel-cronograma" class="tab-panel">
+      <div class="section-lead">
+        <div class="section-lead-text">
+          <span class="kicker">Secuencia Legal y Operativa</span>
+          <h2>Ruta Crítica del Día de la Elección (Día D)</h2>
+          <p>
+            Desde la convocatoria de instalación a las 5:00 a.m. hasta la entrega física del paquete electoral bajo custodia de la Policía Nacional Civil (PNC) a la JEM.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-container">
+        
+        <!-- Timeline 05:00 -->
+        <div class="timeline-node highlight-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">05:00 a.m.</span>
+            <h3 class="timeline-title">Fase 1: Ingreso, Identificación y Quórum Legal de Instalación</h3>
+            <div class="timeline-details">
+              <p>
+                Los integrantes propietarios y suplentes de la JRV ingresan al centro de votación presentando su DUI original y credencial oficial emitida por el TSE (Art. 189 y 190 CE).
+              </p>
+              <ul>
+                <li><strong>Quórum mínimo (Art. 99 y 100 CE):</strong> La JRV puede integrarse válidamente con un mínimo de <strong>3 personas propietarias</strong> para los cargos de Presidente, Secretario y Primer Vocal. Los cargos se asumen de forma ascendente desde vocalías.</li>
+                <li><strong>Recepción del paquete electoral:</strong> A disposición a partir de las 5:00 a.m. El Secretario verifica el sello del paquete y firma el acta de recepción frente a delegados JEM (Art. 189 CE).</li>
+                <li><strong>Levantamiento del Acta de Instalación (Art. 192 CE):</strong> Firmada y sellada por los miembros y vigilantes presentes antes de iniciar la votación.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 06:00 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">06:00 a.m. - 06:45 a.m.</span>
+            <h3 class="timeline-title">Fase 2: Verificación de Materiales y Preparación del Recinto Secreto</h3>
+            <div class="timeline-details">
+              <p>
+                Acondicionamiento físico del aula o espacio asignado para salvaguardar el sufragio secreto y universal (Art. 78 Cn y 193 CE).
+              </p>
+              <ul>
+                <li><strong>Auditoría de papeletas (Art. 186 CE):</strong> Comprobar 700 papeletas por elección. Verificar tipo de elección, sello TSE y Escudo de la República al reverso, correlativo y numeración correspondiente a la JRV.</li>
+                <li><strong>Armado de depósitos y anaquel:</strong> El Tercer Vocal arma las 3 urnas y las ubica a la izquierda de la mesa. El anaquel doble se orienta garantizando el secreto absoluto del voto (prohibido cámaras o celulares).</li>
+                <li><strong>Fijación del Padrón de Búsqueda (Art. 193 CE):</strong> En el exterior del recinto o dintel de la puerta para facilitar la consulta del electorado.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 07:00 -->
+        <div class="timeline-node highlight-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">07:00 a.m.</span>
+            <h3 class="timeline-title">Fase 3: Votación de Miembros de Mesa y Apertura al Público</h3>
+            <div class="timeline-details">
+              <p>
+                A las 7:00 en punto, el Presidente convoca a los integrantes y vigilantes para emitir su voto previo a la ciudadanía (Art. 195 CE).
+              </p>
+              <ul>
+                <li><strong>Custodia de DUIs de la mesa:</strong> Se retienen los DUIs de los integrantes y vigilantes de la JRV en la bolsa de seguridad sobre la mesita de presidencia, devolviéndose únicamente al cierre de la votación (Art. 195 CE).</li>
+                <li><strong>Vigilancia y supervisión:</strong> La JRV, vigilantes, jefes de centro y supervisores votan en la <em>primera mesa</em> del centro de votación (o segunda mesa si el centro tiene más de 20 JRVs).</li>
+                <li><strong>Fuerza de seguridad:</strong> Agentes PNC, FAES y Fiscal Electoral votan con DUI y carné institucional acreditado.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 07:00 a 17:00 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">07:00 a.m. - 05:00 p.m.</span>
+            <h3 class="timeline-title">Fase 4: Flujo Continuo de Votación y Protocolo de 11 Pasos</h3>
+            <div class="timeline-details">
+              <p>
+                La votación se desarrolla sin interrupción. Se aplica rigurosamente el procedimiento del Código Electoral (Arts. 196 y 197 CE):
+              </p>
+              <ul>
+                <li>1. Presentación de DUI y cotejo en padrón de búsqueda; verificación de ausencia de tinta previa.</li>
+                <li>2. El Secretario firma, sella con sello de JRV y muestra las papeletas; desprende la esquina de 3 dígitos correlativos.</li>
+                <li>3. Emisión en anaquel en estricta soledad; retorno del crayón; depósito doblado en urna correspondiente.</li>
+                <li>4. Firma o huella en padrón de firmas usando la regla guía; entintado del dedo pulgar derecho; devolución del DUI.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 16:00 -->
+        <div class="timeline-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">04:00 p.m.</span>
+            <h3 class="timeline-title">Fase 5: Recepción del Kit Tecnológico SEP</h3>
+            <div class="timeline-details">
+              <p>
+                El Secretario recibe la caja de conexiones (UPS, extensión) y el maletín del Kit de Transmisión del SEP provisto por el TSE (laptop, escáner, impresora, módem 4G/LTE, proyector).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 17:00 -->
+        <div class="timeline-node highlight-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">05:00 p.m.</span>
+            <h3 class="timeline-title">Fase 6: Cierre de Votación y Protección de la Fila (Art. 198 CE)</h3>
+            <div class="timeline-details">
+              <p>
+                A las 17:00 horas exactas, el Presidente anuncia el cierre de la votación.
+              </p>
+              <ul>
+                <li><strong>El Tercer Vocal se coloca físicamente al final de la fila:</strong> Todo ciudadano que se encuentre formado en la fila a las 5:00 p.m. tiene derecho constitucional a votar. Se impide la adhesión de personas posteriores a esa hora.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline 17:15+ -->
+        <div class="timeline-node highlight-node">
+          <div class="timeline-marker"></div>
+          <div class="timeline-card">
+            <span class="timeline-time-badge">17:15 p.m. en adelante</span>
+            <h3 class="timeline-title">Fase 7: Escrutinio Preliminar, Transmisión SEP y Devolución (Art. 200-210 CE)</h3>
+            <div class="timeline-details">
+              <p>
+                La JRV realiza el escrutinio preliminar en orden legal estricto: <strong>1° Presidencial, 2° Legislativa, 3° Municipal</strong>.
+              </p>
+              <ul>
+                <li>1. Conteo e inutilización de papeletas sobrantes rasgadas a la mitad antes de tocar las urnas.</li>
+                <li>2. Apertura y clasificación a viva voz de bloques físicos visibles: Válidos (bandera/rostro), Nulos, Abstenciones e Impugnados.</li>
+                <li>3. Digitación proyectada en el SEP; revisión de borrador; impresión de copias oficiales por color.</li>
+                <li>4. Escaneo del original y transmisión digital directa al TSE.</li>
+                <li>5. Entrega del acta original al recolector con recibo firmado; embalaje de seguridad del kit y del paquete electoral hacia la JEM con custodia PNC.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+              <section id="panel-roles" class="tab-panel">
+      <div class="section-lead">
+        <div class="section-lead-text">
+          <span class="kicker">Régimen de Competencias y Prohibiciones</span>
+          <h2>Matriz Comparativa de Actores Electorales</h2>
+          <p>
+            Conozca con exactitud qué facultades ostenta cada figura en el centro de votación y cuáles son los límites infranqueables que protegen la soberanía de la JRV como máxima autoridad de mesa (Art. 86 Cn y 108 CE).
+          </p>
+        </div>
+      </div>
+
+      <div class="roles-table-wrapper">
+        <table class="roles-table">
+          <thead>
+            <tr>
+              <th style="width: 22%;">Actor / Institución</th>
+              <th style="width: 26%;">Naturaleza y Misión Principal</th>
+              <th style="width: 26%;">Facultades Específicas Permitidas</th>
+              <th style="width: 26%;">Límites y Prohibiciones Expresas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="role-title">Junta Receptora de Votos (JRV)</span>
+                <span class="scenario-tag">Art. 38 lit. d, 108 CE</span>
+              </td>
+              <td>Organismo Electoral Temporal (OET). <strong>Máxima autoridad jurisdiccional</strong> en la mesa receptora durante el día de la elección.</td>
+              <td>
+                Administrar la votación, calificar votos a viva voz, dirigir el escrutinio preliminar, usar el SEP, sancionar anomalías y levantar actas oficiales.
+                <span class="badge-perm">Decisión vinculante de mesa</span>
+              </td>
+              <td>
+                No puede sesionar con menos de 3 integrantes. No puede delegar el conteo ni permitir que personas ajenas manipulen el sistema informático.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span class="role-title">Fiscal Electoral (FGR)</span>
+                <span class="scenario-tag">Art. 278 CE</span>
+              </td>
+              <td>Representante de la Fiscalía General de la República. Custodio de la legalidad penal y electoral en el centro de votación.</td>
+              <td>
+                Vigilar el apego a la ley, intervenir en flagrancia de delitos electorales (fraude, coacción, falsedad documental) y recibir denuncias formales.
+                <span class="badge-perm">Vigilancia de Legalidad</span>
+              </td>
+              <td>
+                <span class="badge-limit">PROHIBIDO SUPLANTAR JRV</span>
+                No interviene en las deliberaciones internas de la JRV; <strong>no puede decidir sobre la validez de un voto</strong> ni reasignar cargos de mesa (Art. 129, 196 lit. b CE).
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span class="role-title">Junta de Vigilancia Electoral (JVE)</span>
+                <span class="scenario-tag">Art. 131 - 134 CE</span>
+              </td>
+              <td>Organismo de <strong>carácter permanente</strong> integrado por directores designados por los partidos políticos legalmente inscritos.</td>
+              <td>
+                Fiscalizar las actividades y funcionamiento de las dependencias del TSE, organismos temporales y RNPN. Recibir copia del acta preliminar (franja gris).
+                <span class="badge-perm">Fiscalización Interpartidaria</span>
+              </td>
+              <td>
+                <span class="badge-limit">SIN VOTO EN LA MESA</span>
+                No tiene facultades decisorias dentro de la JRV. No puede interrumpir el escrutinio ni tocar las papeletas de votación.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span class="role-title">Vigilantes de Partidos Políticos</span>
+                <span class="scenario-tag">Art. 113, 124, 129 CE</span>
+              </td>
+              <td>Delegados partidarios acreditados ante la mesa para presenciar y fiscalizar la pureza del acto comicial.</td>
+              <td>
+                Observar a corta distancia la recepción de votos y conteo, solicitar revisión visual, impugnar votos con causa, firmar actas y recibir su copia.
+                <span class="badge-perm">Fiscalización en Mesa</span>
+              </td>
+              <td>
+                <span class="badge-limit">PROHIBIDO MANIPULAR PAPELETAS</span>
+                No pueden tocar votos, alterar el orden ni coaccionar electores. Si interfieren gravemente son <strong>removidos de inmediato por su suplente</strong> (Art. 129 CE).
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span class="role-title">Misiones de Observación Electoral</span>
+                <span class="scenario-tag">Art. 63 lit. f CE</span>
+              </td>
+              <td>Organismos nacionales o internacionales debidamente acreditados por el Organismo Colegiado del TSE.</td>
+              <td>
+                Presenciar libremente la instalación, votación, escrutinio y transmisión; recabar datos para informes técnicos de transparencia.
+                <span class="badge-perm">Testigos Técnicos</span>
+              </td>
+              <td>
+                <span class="badge-limit">NEUTRALIDAD ESTRICTA</span>
+                Prohibido inducir el voto, emitir juicios de valor proselitistas, ofender a contendientes o poner en riesgo el secreto del voto.
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <span class="role-title">Junta Electoral Municipal (JEM)</span>
+                <span class="scenario-tag">Art. 98 CE</span>
+              </td>
+              <td>OET de ámbito municipal que supervisa directamente a las JRVs de su demarcación geográfica y entrega de paquetes.</td>
+              <td>
+                Nombrar delegados en centros de votación, juramentar a las JRVs, resolver incidentes no resueltos en mesa y recibir los paquetes electorales al cierre.
+                <span class="badge-perm">Autoridad Jerárquica Municipal</span>
+              </td>
+              <td>
+                No puede alterar las actas originales firmadas por la JRV. Debe custodiar y remitir de inmediato a la JED y al TSE.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+              <section id="panel-actas" class="tab-panel">
+      <div class="section-lead">
+        <div class="section-lead-text">
+          <span class="kicker">Protocolo Oficial de Transmisión e Impresión</span>
+          <h2>Distribución y Código de Colores de Copias del Acta</h2>
+          <p>
+            Al finalizar el escrutinio en el SEP (Paso 4 y 6), la impresora del kit emite el Acta Original y copias con franjas de color codificadas para cada institución y actor político (Art. 209 CE).
+          </p>
+        </div>
+      </div>
+
+      <div class="color-protocol-grid">
+        <div class="color-card">
+          <div class="color-band" style="background-color: #14213d;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: var(--primary-container); color: var(--primary);">Documento Matriz</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Acta Original TSE</h3>
+              <p class="color-desc">
+                Firmada por todos los miembros y vigilantes. Se escanea en el kit para transmisión telemática y se entrega en mano al recolector oficial del TSE mediante recibo de entrega foliado en dos partes.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">Destino: Centro de Procesamiento TSE</div>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-band" style="background-color: #e83e8c;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: #fce8f3; color: #a61e68;">Franja Rosada</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Junta Electoral Departamental (JED)</h3>
+              <p class="color-desc">
+                Copia oficial con franja color rosado destinada a la JED respectiva para el archivo y consolidación departamental de resultados.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #a61e68;">Destino: JED Departamental</div>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-band" style="background-color: #28a745;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: #e3f5e9; color: #1e7e34;">Franja Verde</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Fiscalía General (FGR)</h3>
+              <p class="color-desc">
+                Copia con franja color verde para el Fiscal Electoral acreditado, asegurando la custodia penal y probatoria de los comicios.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #1e7e34;">Destino: Fiscal Electoral FGR</div>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-band" style="background-color: #ffc107;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: #fff9e6; color: #997300;">Franja Amarilla</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Junta Electoral Municipal (JEM)</h3>
+              <p class="color-desc">
+                Copia con franja color amarillo entregada a la JEM o sus delegados al momento de retornar el paquete electoral.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #997300;">Destino: JEM Municipal</div>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-band" style="background-color: #6c757d;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: #e9ecef; color: #495057;">Franja Gris</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Partidos Políticos Contendientes</h3>
+              <p class="color-desc">
+                Una copia con franja color gris para cada uno de los partidos o coaliciones legalmente contendientes presentes en la mesa.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #495057;">Destino: Vigilantes de Partidos</div>
+          </div>
+        </div>
+
+        <div class="color-card">
+          <div class="color-band" style="background-color: #495057;"></div>
+          <div class="color-card-body">
+            <div>
+              <span class="color-tag" style="background-color: #dee2e6; color: #212529;">Franja Gris (JVE)</span>
+              <h3 class="color-entity" style="margin-top: var(--space-xs);">Junta de Vigilancia Electoral</h3>
+              <p class="color-desc">
+                Copia entregada al representante de la JVE para la fiscalización interpartidaria permanente reconocida en el Código Electoral.
+              </p>
+            </div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #212529;">Destino: Delegado JVE</div>
+          </div>
+        </div>
+      </div>
+    </section>
+          <section id="panel-certificado" class="tab-panel" role="tabpanel" aria-labelledby="tab-certificado">
+  <div class="cert-card">
+    <div class="cert-watermark">TSE</div>
+    <div class="cert-kicker">Tribunal Supremo Electoral • República de El Salvador</div>
+    <h2 class="cert-heading font-caslon">Constancia de Capacitación Jurisdiccional</h2>
+
+    <div class="cert-name-wrap no-print">
+      <label for="studentName" class="cert-meta-label">Nombre del participante</label>
+      <input type="text" id="studentName" class="form-input" maxlength="80" placeholder="Escriba su nombre completo" autocomplete="name">
+    </div>
+    <p class="cert-name-print" id="certNamePrint" hidden></p>
+
+    <p class="cert-body">
+      Se acredita que <strong id="certNameInline">el usuario</strong> ha interactuado exhaustivamente con el marco procedimental y normativo para el desempeño de funciones en las <strong>Juntas Receptoras de Votos (JRV)</strong>, habiendo analizado las causales de nulidad, voto preferencial, voto cruzado, escrutinio preliminar SEP y el régimen de responsabilidades del Código Electoral.
+    </p>
+
+    <div class="cert-meta">
+      <div class="cert-meta-item">
+        <span class="cert-meta-label">Casos Prácticos Resueltos</span>
+        <span class="cert-meta-val tabular-numbers" id="certSolvedCount">0 / 8</span>
+      </div>
+      <div class="cert-meta-item">
+        <span class="cert-meta-label">Boletas Electorales Calificadas</span>
+        <span class="cert-meta-val tabular-numbers" id="certBallotsCount">0 / 6</span>
+      </div>
+      <div class="cert-meta-item">
+        <span class="cert-meta-label">Porcentaje Global de Acierto</span>
+        <span class="cert-meta-val tabular-numbers" id="certScorePercent">0%</span>
+      </div>
+      <div class="cert-meta-item">
+        <span class="cert-meta-label">Estado de Habilitación</span>
+        <span class="cert-meta-val" id="certStatusLabel" style="color: var(--warning); font-size: 1rem;">En Progreso</span>
+      </div>
+      <div class="cert-meta-item">
+        <span class="cert-meta-label">Fecha de emisión</span>
+        <span class="cert-meta-val" id="certDate" style="font-size: 1rem;">10/11/2026</span>
+      </div>
+    </div>
+
+    <div class="no-print" style="margin-top: var(--space-xl); display: flex; justify-content: center; gap: var(--space-md); flex-wrap: wrap;">
+      <button type="button" class="btn-charter" data-action="reset">
+        <i data-lucide="rotate-ccw" style="width: 15px; height: 15px;"></i>
+        Reiniciar Simulador
+      </button>
+      <button type="button" class="btn-charter btn-charter-secondary" data-action="print">
+        <i data-lucide="printer" style="width: 15px; height: 15px;"></i>
+        Imprimir Constancia
+      </button>
+    </div>
+  </div>
+</section>
+      </main>
+
+  <footer class="app-footer">
+  <p>Material de adiestramiento. No sustituye el Código Electoral vigente ni las instrucciones oficiales del TSE.</p>
+</footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="application/json" id="jrv-data">{"csrf":"","endpoint":null,"totalPapeletas":700,"scenarios":[{"id":"caso_1","category":"votacion","kicker":"Identificación y Fe Pública","title":"Caso 1: Ciudadano presenta DUI con sospechas evidentes de alteración física","legalArt":"Arts. 32, 196 CE","facts":"A las 10:15 a.m., un ciudadano se presenta a la JRV 1003 y entrega su Documento Único de Identidad (DUI). Al realizar la inspección física obligatoria, el Presidente nota anomalías graves: fotografía visiblemente sobrepuesta, película plástica despegada con pegamento casero y dígitos del número correlativo en tipografía discordante respecto al formato del RNPN.","question":"¿Cuál es la actuación legal obligatoria que debe adoptar el Presidente de la JRV?","options":[{"id":"opt_a","text":"Permitir que el ciudadano vote si su nombre aparece en el padrón de búsqueda, pues la JRV no es un cuerpo pericial forense.","isCorrect":false,"rationale":"Incorrecto. El Art. 196 inc. 2 lit. b y c del CE faculta e impone a la presidencia de la JRV confrontar la autenticidad e identidad del portador. Entregar papeletas ante una falsificación evidente vulnera la pureza del sufragio."},{"id":"opt_b","text":"Confrontar respetuosamente al ciudadano, denegar la entrega de papeletas de votación, retener el documento para consignar la incidencia e informar de inmediato al Fiscal Electoral destacado.","isCorrect":true,"rationale":"¡Correcto! Conforme a las directrices del TSE y los Arts. 32 y 196 literales b y c del Código Electoral, ante inconsistencias físicas manifiestas en el DUI, el Presidente deniega la entrega de papeletas, no permite el sufragio, anota al ciudadano en la hoja de \u0027Ciudadanos que no pudieron votar\u0027 y da aviso al Fiscal Electoral de la FGR para que proceda conforme a sus facultades."},{"id":"opt_c","text":"Confiscar el documento y ordenar a la PNC el arresto inmediato del ciudadano dentro del aula sin consultar a nadie.","isCorrect":false,"rationale":"Incorrecto. La JRV tiene facultades electorales administrativas, no jurisdicción penal punitiva directa para ejecutar detenciones de oficio sin intervención de la FGR o flagrancia coordinada con la PNC (Art. 14 Cn)."}],"legalCitation":"Fundamento: Código Electoral, Art. 32, Art. 196 inc. 2 lit. b y c; Instructivo de JRV TSE Paso 1 y Procedimiento de Emisión del Voto."},{"id":"caso_2","category":"seguridad","kicker":"Disciplina y Fiscalización Partidaria","title":"Caso 2: Vigilante de partido interrumpe gravemente de palabra y altera el orden de mesa","legalArt":"Art. 129 CE","facts":"A las 14:00 horas, el vigilante propietario de un partido político increpa a gritos a los miembros de la JRV, acusa falsamente de fraude, obstaculiza la entrega de papeletas y genera un tumulto que paraliza la votación durante 10 minutos continuos tras desatender tres llamados de atención de la presidencia.","question":"¿Qué medida legal debe ejecutar la JRV de conformidad con el Código Electoral?","options":[{"id":"opt_a","text":"Suspender definitivamente la votación en la mesa hasta que se presente la Junta Electoral Departamental (JED).","isCorrect":false,"rationale":"Incorrecto. La votación es de carácter continuo entre las 7:00 a.m. y las 5:00 p.m. (Art. 198 CE). La JRV debe resolver el incidente sin despojar del derecho al voto a los ciudadanos."},{"id":"opt_b","text":"Privar inmediatamente de sus funciones al vigilante infractor, hacerlo constar en acta, ordenar su sustitución por el suplente acreditado sin más trámite y dar aviso al TSE y al Fiscal Electoral.","isCorrect":true,"rationale":"¡Correcto! El Art. 129 del Código Electoral es taxativo: cuando un representante o vigilante de partido interfiera gravemente de palabra o de obra la función de la JRV o el normal desarrollo del proceso, será privado de su función y sustituido de inmediato por su suplente. Esto se hace constar en acta y se notifica al TSE y al Fiscal Electoral."},{"id":"opt_c","text":"Permitir que permanezca en la mesa pero prohibirle firmar el acta al final del día.","isCorrect":false,"rationale":"Incorrecto. Permitir la permanencia de un actor disruptivo viola el deber de la JRV de garantizar el normal desarrollo y la tranquilidad de los electores."}],"legalCitation":"Fundamento: Código Electoral, Art. 129; Guía de Aprendizaje TSE caso 1."},{"id":"caso_3","category":"votacion","kicker":"Integridad de los Depósitos","title":"Caso 3: Daño accidental y fractura de una urna durante la jornada de votación","legalArt":"Art. 199 CE","facts":"A las 11:45 a.m., una caída accidental provoca la rotura de la base del depósito de votos para la elección de diputados (urna amarilla). Las papeletas caen brevemente al suelo pero no se extravían ni se confunden.","question":"¿Cómo debe proceder la JRV para garantizar la continuidad y validez de los votos?","options":[{"id":"opt_a","text":"Reemplazar de inmediato el depósito dañado por uno de reserva en presencia de los vigilantes, trasladar el contenido a la vista de todos, sellar y asentar la circunstancia detallada en acta.","isCorrect":true,"rationale":"¡Correcto! Conforme al Art. 199 del Código Electoral, en caso de deterioro o daño de un depósito, la JRV solicita o utiliza el reemplazo oficial en presencia de los vigilantes, traslada el contenido asegurando la total transparencia a la vista de los presentes y levanta acta del incidente."},{"id":"opt_b","text":"Anular todas las papeletas depositadas hasta ese momento y pedir a los votantes que regresen a votar de nuevo.","isCorrect":false,"rationale":"Incorrecto. Nadie puede votar dos veces (Art. 197 CE) y la JRV no tiene potestad para anular votos válidos emitidos por desperfectos materiales de la urna."},{"id":"opt_c","text":"Parar la votación y trasladar las papeletas en bolsas de plástico comunes sin levantar acta.","isCorrect":false,"rationale":"Incorrecto. Se requiere estricta formalidad y fe pública para asegurar la cadena de custodia del voto."}],"legalCitation":"Fundamento: Código Electoral, Art. 199; Instructivo JRV Casos Especiales de Votación."},{"id":"caso_4","category":"votacion","kicker":"Hora de Cierre y Derecho al Sufragio","title":"Caso 4: El reloj marca las 17:00 horas y permanecen ciudadanos formados en fila","legalArt":"Art. 198 CE","facts":"A las 17:00:00 en punto, el Presidente de la JRV anuncia el cierre legal de la votación. Fuera del aula, en el pasillo, hay exactamente 12 electores formados pacíficamente esperando su turno. A las 17:02 se incorpora un decimotercer ciudadano corriendo.","question":"¿Qué acción específica debe ordenar el Presidente al Tercer Vocal para cumplir la ley?","options":[{"id":"opt_a","text":"Cerrar la puerta con llave y no dejar votar a nadie que no esté ya sentado dentro del aula a las 5:00 p.m.","isCorrect":false,"rationale":"Incorrecto. El Código Electoral salvadoreño protege el sufragio de los ciudadanos que ya se encontraban físicamente en la fila a la hora fijada para el cierre."},{"id":"opt_b","text":"Solicitar al Tercer Vocal que se coloque físicamente al final de la fila a las 5:00 p.m.; permitir votar a los 12 ciudadanos ya formados e impedir el ingreso del que llegó a las 5:02 p.m.","isCorrect":true,"rationale":"¡Correcto! El Art. 198 del CE y el Instructivo Oficial de JRV establecen: al anunciar las 5:00 p.m., el Presidente solicita al Tercer Vocal colocarse al final de la fila para garantizar el cierre sin perjudicar el derecho al voto de los que se encuentran formados al momento del aviso. Toda persona que llegue posteriormente no podrá votar."},{"id":"opt_c","text":"Mantener abierta la mesa para cualquier persona que llegue hasta las 18:00 horas sin distinción.","isCorrect":false,"rationale":"Incorrecto. La ley fija el cierre a las 17:00 horas; extender la votación arbitrariamente para nuevos electores invalida la certeza del comicio."}],"legalCitation":"Fundamento: Código Electoral, Art. 198; Instructivo JRV Cierre de Votación y Escrutinio."},{"id":"caso_5","category":"escrutinio","kicker":"Validación Excepcional de Boletas","title":"Caso 5: Papeleta sin sello de la JRV o sin firma del Secretario en la urna","legalArt":"Art. 208 CE","facts":"Durante la apertura de la urna presidencial, se extrae una papeleta con una marca clarísima sobre una bandera, pero carece de la firma del Secretario y del sello estampado de la JRV. Un vigilante partidario exige anularla inmediatamente como voto nulo.","question":"¿Qué actuación manda de manera expresa el Código Electoral antes de anular dicha papeleta?","options":[{"id":"opt_a","text":"Anularla sin discusión, pues la falta de firma del secretario es causal automática e irrevocable de nulidad.","isCorrect":false,"rationale":"Incorrecto. El Art. 208 del CE prevé un procedimiento específico de comprobación para no privar al ciudadano de su voto por una omisión material involuntaria de la mesa."},{"id":"opt_b","text":"Proceder a la verificación excepcional de 4 requisitos: tipo de elección, sello del TSE y Escudo al reverso, correlativo concordante y coincidencia de número de JRV. Si se demuestra su autenticidad, se toma como voto válido.","isCorrect":true,"rationale":"¡Correcto! El Art. 208 del Código Electoral y la presentación oficial del TSE señalan que cuando falte sello o firma, la JRV y vigilantes verificarán: a) Tipo de elección; b) Sello TSE y Escudo de la República impresos en el reverso; c) Correlativo coincidente con el registro de papeletas entregadas; y d) Que el número de papeleta corresponda a la JRV. Demostrada la autenticidad, se tomará como voto válido."},{"id":"opt_c","text":"Pedir al Secretario que firme y selle la papeleta en ese momento para corregir el error a posteriori.","isCorrect":false,"rationale":"Incorrecto. El Secretario no puede firmar o sellar papeletas ya depositadas en la urna durante el escrutinio, ya que se consideraría manipulación indebida de votos."}],"legalCitation":"Fundamento: Código Electoral, Art. 208; Presentación TSE Escrutinio Preliminar Paso 1."},{"id":"caso_6","category":"escrutinio","kicker":"Discrepancias en Conteo y Acta Preliminar","title":"Caso 6: Inconsistencia entre registros auxiliares (palotes) y el Acta del SEP","legalArt":"Arts. 200, 209, 215 CE","facts":"Al digitar los resultados en el SEP, el Secretario advierte que los registros auxiliares en papel llevados por los vigilantes consignan 145 votos para un contendiente, mientras que en el conteo a viva voz y en la mesa física hay 142 papeletas. Los vigilantes exigen que la JRV modifique el acta para concordar con sus hojas de apuntes.","question":"¿Cuáles son los límites jurídicos de corrección y qué prevalece según la ley?","options":[{"id":"opt_a","text":"Prevalecen las hojas auxiliares de los vigilantes, pues representan la suma multipartidaria de control.","isCorrect":false,"rationale":"Incorrecto. Los apuntes de los vigilantes son herramientas auxiliares privadas; no poseen fe pública electoral ni sustituyen el recuento físico de las papeletas oficiales por la JRV."},{"id":"opt_b","text":"La JRV debe recontar físicamente las papeletas de ese bloque sobre la mesa. Prevalece la comprobación material de las boletas oficiales. Una vez validada y transmitida el acta, la JRV no puede alterarla; cualquier disconformidad se eleva al escrutinio definitivo del TSE.","isCorrect":true,"rationale":"¡Correcto! La base legal del escrutinio descansa en el recuento físico voto por voto bajo fe pública de la JRV (Art. 200 lit. b CE). Las hojas auxiliares no tienen supremacía legal. Si persiste duda antes del cierre, se cuenta de nuevo físicamente; fijado el resultado en el SEP y transmitido, precluye la competencia de la JRV y corresponde al TSE en escrutinio final conocer de impugnaciones (Art. 215 CE)."},{"id":"opt_c","text":"Dividir la diferencia entre los partidos para mantener la armonía de la mesa.","isCorrect":false,"rationale":"Incorrecto. La distribución arbitraria de votos constituye fraude electoral y delito penado por la legislación salvadoreña."}],"legalCitation":"Fundamento: Código Electoral, Arts. 200, 209, 214 y 215; Caso General Instructivo TSE."},{"id":"caso_7","category":"seguridad","kicker":"Límites del Fiscal Electoral y Observadores","title":"Caso 7: Fiscal Electoral u Observador pretende decidir sobre la calificación de un voto","legalArt":"Arts. 129, 278 CE; Art. 86 Cn","facts":"Durante la calificación de una papeleta con una marca ambigua en la elección municipal, los miembros de la JRV debaten si es voto nulo o válido. El Fiscal Electoral presente se sienta a la mesa y les ordena categorizarlo como voto nulo, afirmando que su investidura de la FGR es superior a la JRV.","question":"¿Es válida la orden del Fiscal Electoral en la calificación del voto?","options":[{"id":"opt_a","text":"Sí, porque el Fiscal Electoral representa a la Fiscalía General de la República y tiene mando vinculante sobre la mesa.","isCorrect":false,"rationale":"Incorrecto. El Fiscal Electoral vigila el cumplimiento de la ley (Art. 278 CE), pero el Código Electoral prohíbe expresamente que intervenga en las deliberaciones internas de la JRV o suplante sus facultades jurisdiccionales de calificación de votos."},{"id":"opt_b","text":"No. La JRV es la máxima autoridad electoral en la mesa durante el evento comicial. El Fiscal Electoral no tiene voto, no delibera ni califica papeletas; su función se limita a fiscalizar la legalidad sin interferir en las decisiones de la Junta.","isCorrect":true,"rationale":"¡Correcto! Conforme a los Arts. 129, 196 lit. b y d, y 225 del Código Electoral, la JRV es soberana en sus atribuciones de escrutinio preliminar. Ni el Fiscal Electoral ni los observadores pueden suplantar a la JRV ni imponer criterios de votación de papeletas."},{"id":"opt_c","text":"El voto debe entregarse en sobre cerrado a la Policía Nacional Civil para que ellos lo decidan.","isCorrect":false,"rationale":"Incorrecto. La PNC solo brinda seguridad y custodia material; carece de toda atribución para calificar sufragios."}],"legalCitation":"Fundamento: Código Electoral, Arts. 108, 129, 278; Constitución de la República, Art. 86."},{"id":"caso_8","category":"escrutinio","kicker":"Régimen Legal de Coaliciones","title":"Caso 8: Votante marca dos banderas pertenecientes a una coalición legalmente inscrita","legalArt":"Art. 207 inc. final CE","facts":"En la elección presidencial, aparece una papeleta en la que el elector marcó claramente con una \u0027X\u0027 dos banderas partidarias distintas, pero entre ambos partidos existe un pacto de coalición debidamente inscrito y publicado por el TSE para esa elección. Un vigilante opositor alega que marcar dos banderas genera nulidad automática.","question":"¿Cómo debe calificarse legalmente este sufragio según el Código Electoral?","options":[{"id":"opt_a","text":"Voto Nulo, porque nunca se pueden marcar dos banderas en una misma papeleta sin importar que estén coaligadas.","isCorrect":false,"rationale":"Incorrecto. El inciso final del Art. 207 del Código Electoral establece una excepción expresa para las coaliciones formalmente registradas."},{"id":"opt_b","text":"No será nulo: se contabiliza como voto válido para la coalición y se adjudica, para efectos del escrutinio de esa JRV, al partido integrante de la coalición que tenga menos votos en dicha mesa.","isCorrect":true,"rationale":"¡Correcto! El Art. 207 inc. final del Código Electoral dispone expresamente: \u0027No será nulo el voto cuando en la papeleta se hayan marcado dos o más de las banderas de los partidos entre los que exista coalición legalmente inscrita; y en ese caso, se contabilizará el voto a favor de la coalición, y se adjudicará para efectos del escrutinio, al partido integrante de la coalición que tenga menos votos en la Junta Receptora de Votos respectiva\u0027."},{"id":"opt_c","text":"Voto Impugnado, obligando a remitirlo a la Corte Suprema de Justicia para su análisis.","isCorrect":false,"rationale":"Incorrecto. No hay duda que amerite impugnación porque la ley secundaria resuelve con precisión matemática a quién se adjudica el voto en la propia mesa."}],"legalCitation":"Fundamento: Código Electoral, Art. 207 inc. final; Instructivo Escrutinio TSE."}],"ballots":[{"id":"ballot_1","label":"Boleta A: Bandera Única","election":"Elección de Diputados a la Asamblea Legislativa","number":"Papeleta N° 0124 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE [Válidos]","observation":"Marca en cruz nítida sobre la bandera del Partido Verde. No hay marcas en rostros ni en otros partidos.","correctCategory":"valido_entero","rationale":"Es un Voto Válido Entero a favor del Partido A (Art. 205 lit. a CE). Sirve para definir los escaños del partido en la circunscripción sin asignar preferencia a ningún candidato individual.","legalRef":"Art. 205 literal a) Código Electoral.","svg":"ballot_1.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003C!-- Ballot layout: Partidos --\u003E\n  \u003Crect x=\u002215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022115\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003C!-- Flag 1: Partido Verde (Marcado) --\u003E\n  \u003Crect x=\u002220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO A\u003C\/text\u003E\n  \u003C!-- Cross mark --\u003E\n  \u003Cline x1=\u002225\u0022 y1=\u002225\u0022 x2=\u002290\u0022 y2=\u002255\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 stroke-linecap=\u0022round\u0022 \/\u003E\n  \u003Cline x1=\u002290\u0022 y1=\u002225\u0022 x2=\u002225\u0022 y2=\u002255\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 stroke-linecap=\u0022round\u0022 \/\u003E\n  \n  \u003C!-- Candidate faces Partido A --\u003E\n  \u003Crect x=\u002225\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u002260\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u002225\u0022 y=\u0022105\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u002260\u0022 y=\u0022105\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n\n  \u003C!-- Flag 2: Partido B --\u003E\n  \u003Crect x=\u0022120\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#14213d\u0022 \/\u003E\n  \u003Ctext x=\u0022157\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO B\u003C\/text\u003E\n  \u003Crect x=\u0022125\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u0022160\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n\n  \u003C!-- Flag 3: Partido C --\u003E\n  \u003Crect x=\u0022220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#b08d57\u0022 \/\u003E\n  \u003Ctext x=\u0022257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO C\u003C\/text\u003E\n  \u003Crect x=\u0022225\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u0022260\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n\u003C\/svg\u003E\n"},{"id":"ballot_2","label":"Boleta B: Bandera + Rostros Mismo Partido","election":"Elección de Diputados a la Asamblea Legislativa","number":"Papeleta N° 0289 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE [Válidos]","observation":"Marca sobre la bandera del Partido B y marcas en dos rostros de candidatos de ese mismo Partido B.","correctCategory":"valido_preferente","rationale":"Es un Voto Válido Preferencial (Art. 205 lit. d CE). Suma como voto entero para el partido y añade marcas de preferencia a favor de los candidatos marcados para definir el orden de adjudicación de escaños.","legalRef":"Art. 205 literal d) Código Electoral.","svg":"ballot_2.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003Crect x=\u002215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022115\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003C!-- Flag 1: Partido A --\u003E\n  \u003Crect x=\u002220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO A\u003C\/text\u003E\n  \n  \u003C!-- Flag 2: Partido B (Marcado) --\u003E\n  \u003Crect x=\u0022120\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#14213d\u0022 \/\u003E\n  \u003Ctext x=\u0022157\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO B\u003C\/text\u003E\n  \u003C!-- Cross mark on Flag --\u003E\n  \u003Cline x1=\u0022125\u0022 y1=\u002225\u0022 x2=\u0022190\u0022 y2=\u002255\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \u003Cline x1=\u0022190\u0022 y1=\u002225\u0022 x2=\u0022125\u0022 y2=\u002255\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \n  \u003C!-- Faces with marks --\u003E\n  \u003Crect x=\u0022125\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Cline x1=\u0022125\u0022 y1=\u002270\u0022 x2=\u0022155\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \u003Cline x1=\u0022155\u0022 y1=\u002270\u0022 x2=\u0022125\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \n  \u003Crect x=\u0022160\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Cline x1=\u0022160\u0022 y1=\u002270\u0022 x2=\u0022190\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \u003Cline x1=\u0022190\u0022 y1=\u002270\u0022 x2=\u0022160\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n\n  \u003Crect x=\u0022125\u0022 y=\u0022105\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Crect x=\u0022160\u0022 y=\u0022105\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n\n  \u003C!-- Flag 3: Partido C --\u003E\n  \u003Crect x=\u0022220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#b08d57\u0022 \/\u003E\n  \u003Ctext x=\u0022257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO C\u003C\/text\u003E\n\u003C\/svg\u003E\n"},{"id":"ballot_3","label":"Boleta C: Marcas en Partidos Distintos (Voto Cruzado)","election":"Elección Legislativa (Circunscripción de 3 Diputados)","number":"Papeleta N° 0355 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE [Válidos]","observation":"Marcas sobre el rostro de 1 candidato del Partido A y 1 candidato del Partido B (total 2 marcas, dentro del límite de 3 escaños del departamento). Sin marcas en banderas.","correctCategory":"valido_cruzado","rationale":"Constituye un Voto Cruzado Válido (Art. 205 lit. f y Art. 214-A CE). La JRV registra en el SEP que la papeleta tiene 2 marcas fraccionadas (0.50 para el Partido A y 0.50 para el Partido B), lo cual es calculado por el sistema informático del TSE.","legalRef":"Arts. 205 literal f) y 214-A del Código Electoral.","svg":"ballot_3.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003Crect x=\u002215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022115\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022215\u0022 y=\u002215\u0022 width=\u002285\u0022 height=\u0022190\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003C!-- Flag 1: Partido A (sin marca) --\u003E\n  \u003Crect x=\u002220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO A\u003C\/text\u003E\n  \u003C!-- Face 1 marcado --\u003E\n  \u003Crect x=\u002225\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Cline x1=\u002225\u0022 y1=\u002270\u0022 x2=\u002255\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \u003Cline x1=\u002255\u0022 y1=\u002270\u0022 x2=\u002225\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n\n  \u003C!-- Flag 2: Partido B (sin marca) --\u003E\n  \u003Crect x=\u0022120\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#14213d\u0022 \/\u003E\n  \u003Ctext x=\u0022157\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO B\u003C\/text\u003E\n  \u003C!-- Face 2 marcado --\u003E\n  \u003Crect x=\u0022125\u0022 y=\u002270\u0022 width=\u002230\u0022 height=\u002225\u0022 fill=\u0022#e9ecef\u0022 stroke=\u0022#aaa\u0022 \/\u003E\n  \u003Cline x1=\u0022125\u0022 y1=\u002270\u0022 x2=\u0022155\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n  \u003Cline x1=\u0022155\u0022 y1=\u002270\u0022 x2=\u0022125\u0022 y2=\u002295\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00223\u0022 \/\u003E\n\n  \u003C!-- Flag 3: Partido C --\u003E\n  \u003Crect x=\u0022220\u0022 y=\u002220\u0022 width=\u002275\u0022 height=\u002240\u0022 fill=\u0022#b08d57\u0022 \/\u003E\n  \u003Ctext x=\u0022257\u0022 y=\u002244\u0022 fill=\u0022#ffffff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO C\u003C\/text\u003E\n\u003C\/svg\u003E\n"},{"id":"ballot_4","label":"Boleta D: Dos Banderas No Coaligadas Marcadas","election":"Elección Presidencial","number":"Papeleta N° 0512 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE [Válidos]","observation":"Marcas en la bandera del Partido A y en la bandera del Partido B. Ninguno de ellos conforma coalición legal.","correctCategory":"nulo","rationale":"Es un Voto Nulo de pleno derecho (Art. 207 lit. a CE): al aparecer marcada la intención en dos partidos que no están coaligados, se anula la voluntad del elector por indeterminación y colisión directa.","legalRef":"Art. 207 literal a) Código Electoral.","svg":"ballot_4.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003Crect x=\u002220\u0022 y=\u002230\u0022 width=\u0022130\u0022 height=\u002270\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022170\u0022 y=\u002230\u0022 width=\u0022130\u0022 height=\u002270\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003C!-- Flag A con X --\u003E\n  \u003Crect x=\u002225\u0022 y=\u002235\u0022 width=\u0022120\u0022 height=\u002260\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002285\u0022 y=\u002270\u0022 fill=\u0022#fff\u0022 font-size=\u002212\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO A\u003C\/text\u003E\n  \u003Cline x1=\u002230\u0022 y1=\u002240\u0022 x2=\u0022140\u0022 y2=\u002290\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n  \u003Cline x1=\u0022140\u0022 y1=\u002240\u0022 x2=\u002230\u0022 y2=\u002290\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n\n  \u003C!-- Flag B con X --\u003E\n  \u003Crect x=\u0022175\u0022 y=\u002235\u0022 width=\u0022120\u0022 height=\u002260\u0022 fill=\u0022#14213d\u0022 \/\u003E\n  \u003Ctext x=\u0022235\u0022 y=\u002270\u0022 fill=\u0022#fff\u0022 font-size=\u002212\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO B\u003C\/text\u003E\n  \u003Cline x1=\u0022180\u0022 y1=\u002240\u0022 x2=\u0022290\u0022 y2=\u002290\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n  \u003Cline x1=\u0022290\u0022 y1=\u002240\u0022 x2=\u0022180\u0022 y2=\u002290\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n\n  \u003Ctext x=\u0022160\u0022 y=\u0022160\u0022 fill=\u0022#9b2c2c\u0022 font-size=\u002211\u0022 text-anchor=\u0022middle\u0022 font-weight=\u0022bold\u0022\u003E[Partidos Contendientes Independientes]\u003C\/text\u003E\n\u003C\/svg\u003E\n"},{"id":"ballot_5","label":"Boleta E: En Blanco Depositada en Urna","election":"Elección de Concejos Municipales","number":"Papeleta N° 0601 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE [Válidos]","observation":"La papeleta fue extraída de la urna completamente limpia, sin ningún tipo de trazo, marca o rasgadura.","correctCategory":"abstencion","rationale":"Constituye una Abstención (Art. 203 CE). La ley define como abstención toda papeleta depositada en la urna que no tenga marca alguna. Se contabiliza en el SEP en el bloque de abstenciones.","legalRef":"Art. 203 Código Electoral.","svg":"ballot_5.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003Crect x=\u002220\u0022 y=\u002230\u0022 width=\u0022130\u0022 height=\u002270\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \u003Crect x=\u0022170\u0022 y=\u002230\u0022 width=\u0022130\u0022 height=\u002270\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003Crect x=\u002225\u0022 y=\u002235\u0022 width=\u0022120\u0022 height=\u002260\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002285\u0022 y=\u002270\u0022 fill=\u0022#fff\u0022 font-size=\u002212\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO 1\u003C\/text\u003E\n  \u003Crect x=\u0022175\u0022 y=\u002235\u0022 width=\u0022120\u0022 height=\u002260\u0022 fill=\u0022#14213d\u0022 \/\u003E\n  \u003Ctext x=\u0022235\u0022 y=\u002270\u0022 fill=\u0022#fff\u0022 font-size=\u002212\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO 2\u003C\/text\u003E\n\n  \u003Ctext x=\u0022160\u0022 y=\u0022160\u0022 fill=\u0022#666\u0022 font-size=\u002212\u0022 text-anchor=\u0022middle\u0022 font-style=\u0022italic\u0022\u003EPapeleta en Blanco (Sin Marcas)\u003C\/text\u003E\n\u003C\/svg\u003E\n"},{"id":"ballot_6","label":"Boleta F: Omisión de Firma del Secretario (Reverso Válido)","election":"Elección Presidencial","number":"Papeleta N° 0045 • JRV 7553","sealStatus":"Reverso: Escudo + Sello TSE + Correlativo Talonario Coincidente","observation":"La papeleta tiene voto claro para el Partido 1. Sin embargo, el Secretario olvidó estampar su firma y sello en el anverso. Todos los demás requisitos del talonario coinciden con la JRV.","correctCategory":"validacion_excepcional","rationale":"Procede la Validación Excepcional de Papeletas (Art. 208 CE). Al corroborar que el reverso tiene sello TSE, Escudo, correlativo del talonario y número de JRV correcto, se comprueba su autenticidad y la ley ordena computarla como voto válido.","legalRef":"Art. 208 Código Electoral.","svg":"ballot_6.svg","svgContent":"\u003Csvg viewBox=\u00220 0 320 220\u0022 width=\u0022100%\u0022 height=\u0022220\u0022 xmlns=\u0022http:\/\/www.w3.org\/2000\/svg\u0022 style=\u0022background:#ffffff; border:1px solid #ccc;\u0022\u003E\n  \u003Crect x=\u002230\u0022 y=\u002220\u0022 width=\u0022260\u0022 height=\u0022100\u0022 fill=\u0022#fcfcfc\u0022 stroke=\u0022#999\u0022 \/\u003E\n  \n  \u003Crect x=\u002240\u0022 y=\u002230\u0022 width=\u0022110\u0022 height=\u002250\u0022 fill=\u0022#2d5a4a\u0022 \/\u003E\n  \u003Ctext x=\u002295\u0022 y=\u002260\u0022 fill=\u0022#fff\u0022 font-size=\u002211\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EPARTIDO 1\u003C\/text\u003E\n  \u003C!-- Valid vote mark --\u003E\n  \u003Cline x1=\u002245\u0022 y1=\u002235\u0022 x2=\u0022145\u0022 y2=\u002275\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n  \u003Cline x1=\u0022145\u0022 y1=\u002235\u0022 x2=\u002245\u0022 y2=\u002275\u0022 stroke=\u0022#9b2c2c\u0022 stroke-width=\u00224\u0022 \/\u003E\n\n  \u003C!-- Seal area empty --\u003E\n  \u003Crect x=\u0022170\u0022 y=\u002230\u0022 width=\u0022110\u0022 height=\u002270\u0022 fill=\u0022#fff\u0022 stroke=\u0022#d9534f\u0022 stroke-dasharray=\u00223,3\u0022 \/\u003E\n  \u003Ctext x=\u0022225\u0022 y=\u002265\u0022 fill=\u0022#d9534f\u0022 font-size=\u00229\u0022 text-anchor=\u0022middle\u0022\u003EFalta Firma y Sello JRV\u003C\/text\u003E\n\n  \u003Crect x=\u002230\u0022 y=\u0022130\u0022 width=\u0022260\u0022 height=\u002270\u0022 fill=\u0022#f0f4f8\u0022 stroke=\u0022#007bff\u0022 \/\u003E\n  \u003Ctext x=\u0022160\u0022 y=\u0022155\u0022 fill=\u0022#007bff\u0022 font-size=\u002210\u0022 font-weight=\u0022bold\u0022 text-anchor=\u0022middle\u0022\u003EVERIFICACIÓN AL REVERSO (Art. 208 CE):\u003C\/text\u003E\n  \u003Ctext x=\u0022160\u0022 y=\u0022175\u0022 fill=\u0022#333\u0022 font-size=\u00229\u0022 text-anchor=\u0022middle\u0022\u003E✓ Sello TSE ✓ Escudo Nacional ✓ N° Correlativo Coincide\u003C\/text\u003E\n\u003C\/svg\u003E\n"}],"progress":{"solvedScenarios":[],"classifiedBallots":[],"currentBallotIndex":0,"studentName":""}}</script>
+      <script>
+/* Núcleo: datos del servidor, estado, API, pestañas y utilidades. */
+window.JRV = (() => {
+  const boot = JSON.parse(document.getElementById('jrv-data').textContent);
+
+  const state = {
+    solvedScenarios: boot.progress.solvedScenarios,
+    classifiedBallots: boot.progress.classifiedBallots,
+    currentBallotIndex: boot.progress.currentBallotIndex,
+    studentName: boot.progress.studentName,
+    activeFilter: 'all',
+  };
+
+  const icons = () => window.lucide && window.lucide.createIcons();
+
+  const toast = (msg) => {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => (el.hidden = true), 3500);
+  };
+
+  const apply = (p) => {
+    state.solvedScenarios = p.solvedScenarios;
+    state.classifiedBallots = p.classifiedBallots;
+    state.currentBallotIndex = p.currentBallotIndex;
+    state.studentName = p.studentName;
+  };
+
+  /* ---- Modo estático (GitHub Pages): sin servidor, califica en el navegador ---- */
+  const LS = 'jrv_progress';
+  const loadLocal = () => {
+    try { return JSON.parse(localStorage.getItem(LS)) || null; } catch { return null; }
+  };
+  const localPayload = (p) => {
+    const solved = {}, classified = {};
+    for (const [id, optId] of Object.entries(p.scenarios)) {
+      const sc = scenarios.find((s) => s.id === id);
+      const opt = sc && sc.options.find((o) => o.id === optId);
+      if (opt) solved[id] = { selectedOpt: optId, isCorrect: !!opt.isCorrect, rationale: opt.rationale, legalCitation: sc.legalCitation };
+    }
+    for (const [id, category] of Object.entries(p.ballots)) {
+      const b = boot.ballots.find((x) => x.id === id);
+      if (b) classified[id] = { category, isCorrect: category === b.correctCategory, rationale: b.rationale, legalRef: b.legalRef };
+    }
+    return { solvedScenarios: solved, classifiedBallots: classified, currentBallotIndex: p.ballotIndex, studentName: p.name };
+  };
+  const scenarios = boot.scenarios;
+  function sendLocal(action, id, value) {
+    const p = loadLocal() || { scenarios: {}, ballots: {}, ballotIndex: 0, name: '' };
+    if (action === 'answer_scenario') p.scenarios[id] = value;
+    else if (action === 'answer_ballot') p.ballots[id] = value;
+    else if (action === 'set_ballot_index') p.ballotIndex = Number(value) || 0;
+    else if (action === 'set_name') p.name = String(value || '').slice(0, 80);
+    else if (action === 'reset') { p.scenarios = {}; p.ballots = {}; p.ballotIndex = 0; }
+    try { localStorage.setItem(LS, JSON.stringify(p)); } catch { /* modo privado: solo memoria */ }
+    apply(localPayload(p));
+    return true;
+  }
+  if (!boot.endpoint) apply(localPayload(loadLocal() || { scenarios: {}, ballots: {}, ballotIndex: 0, name: '' }));
+
+  /** Envía una acción al servidor (o al almacenamiento local en modo estático). */
+  async function send(action, id, value) {
+    if (!boot.endpoint) return sendLocal(action, id, value);
+    try {
+      const res = await fetch(boot.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': boot.csrf },
+        body: JSON.stringify({ action, id, value }),
+      });
+      if (!res.ok) throw new Error(res.status);
+      apply(await res.json());
+      return true;
+    } catch (err) {
+      toast('No se pudo guardar. Revise su conexión e intente de nuevo.');
+      return false;
+    }
+  }
+
+  /* ---- Pestañas (con enlace directo: index.php#clasificador) ---- */
+  const tabs = [...document.querySelectorAll('[data-tab]')];
+  function switchTab(id) {
+    if (!tabs.some((t) => t.dataset.tab === id)) id = 'casos';
+    tabs.forEach((btn) => {
+      const on = btn.dataset.tab === id;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', String(on));
+    });
+    document.querySelectorAll('.tab-panel').forEach((p) => p.classList.toggle('active', p.id === `panel-${id}`));
+    if (location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
+    icons();
+  }
+  tabs.forEach((btn) => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
+  window.addEventListener('hashchange', () => switchTab(location.hash.slice(1)));
+
+  return { boot, state, send, icons, toast, switchTab, scenarios: boot.scenarios, ballots: boot.ballots, total: boot.totalPapeletas };
+})();
+
+</script>
+      <script>
+/* Casos prácticos: render, filtro y respuesta (calificada en el servidor). */
+(() => {
+  const { state, scenarios, send, icons } = window.JRV;
+  const container = document.getElementById('scenariosContainer');
+
+  function render() {
+    const list = scenarios.filter((s) => state.activeFilter === 'all' || s.category === state.activeFilter);
+    container.innerHTML = list.map((sc) => {
+      const solved = state.solvedScenarios[sc.id];
+      const cls = 'scenario-item' + (solved ? (solved.isCorrect ? ' solved-correct' : ' solved-incorrect') : '');
+
+      const options = sc.options.map((opt, i) => {
+        let btn = 'option-btn';
+        if (solved && solved.selectedOpt === opt.id) btn += solved.isCorrect ? ' selected-correct' : ' selected-incorrect';
+        return `<button type="button" class="${btn}" data-case="${sc.id}" data-opt="${opt.id}">
+            <div class="option-marker">${String.fromCharCode(65 + i)}</div><div>${opt.text}</div></button>`;
+      }).join('');
+
+      const feedback = solved ? `
+        <div class="feedback-box show ${solved.isCorrect ? 'correct' : 'incorrect'}" role="status">
+          <div class="feedback-title">
+            <i data-lucide="${solved.isCorrect ? 'check-circle-2' : 'alert-circle'}" style="width:16px;height:16px;"></i>
+            <span>${solved.isCorrect ? 'Decisión Jurídicamente Correcta' : 'Actuación Errónea según el Código Electoral'}</span>
+          </div>
+          <div class="feedback-rationale">${solved.rationale}</div>
+          <div class="feedback-legal">${solved.legalCitation}</div>
+        </div>` : '';
+
+      return `<article class="${cls}" id="card-${sc.id}">
+          <div class="scenario-header">
+            <span class="scenario-tag">${sc.kicker}</span>
+            <span class="scenario-tag legal-art">${sc.legalArt}</span>
+          </div>
+          <h3 class="scenario-title">${sc.title}</h3>
+          <div class="scenario-facts"><strong>Hechos de Mesa:</strong> ${sc.facts}</div>
+          <div class="scenario-question">${sc.question}</div>
+          <div class="options-stack">${options}</div>
+          ${feedback}
+        </article>`;
+    }).join('');
+    icons();
+  }
+
+  container.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-opt]');
+    if (!btn) return;
+    if (await send('answer_scenario', btn.dataset.case, btn.dataset.opt)) {
+      render();
+      window.JRV.updateScore();
+    }
+  });
+
+  document.querySelectorAll('[data-filter]').forEach((pill) =>
+    pill.addEventListener('click', () => {
+      state.activeFilter = pill.dataset.filter;
+      document.querySelectorAll('[data-filter]').forEach((p) => p.classList.toggle('active', p === pill));
+      render();
+    })
+  );
+
+  window.JRV.renderScenarios = render;
+})();
+
+</script>
+      <script>
+/* Clasificador de papeletas. */
+(() => {
+  const { state, ballots, send, icons } = window.JRV;
+  const $ = (id) => document.getElementById(id);
+
+  function renderSelector() {
+    $('ballotSelectorBtns').innerHTML = ballots.map((b, i) => {
+      const c = state.classifiedBallots[b.id];
+      const mark = c ? (c.isCorrect ? ' ✓' : ' ✗') : '';
+      return `<button type="button" class="ballot-thumb-btn ${i === state.currentBallotIndex ? 'active' : ''}" data-ballot="${i}">${b.label}${mark}</button>`;
+    }).join('');
+  }
+
+  function renderCurrent() {
+    const b = ballots[state.currentBallotIndex];
+    if (!b) return;
+    $('ballotHeaderElection').textContent = b.election;
+    $('ballotNumberBadge').textContent = b.number;
+    $('ballotSecSealBadge').textContent = b.sealStatus;
+    $('ballotSvgDisplay').innerHTML = b.svgContent;
+    $('ballotContextDesc').textContent = b.observation;
+
+    const c = state.classifiedBallots[b.id];
+    document.querySelectorAll('.decision-btn').forEach((btn) => {
+      btn.classList.remove('correct-eval', 'incorrect-eval');
+      if (c && btn.dataset.category === c.category) btn.classList.add(c.isCorrect ? 'correct-eval' : 'incorrect-eval');
+    });
+
+    const box = $('ballotFeedbackBox');
+    if (c) {
+      box.className = `feedback-box show ${c.isCorrect ? 'correct' : 'incorrect'}`;
+      $('ballotFeedbackTitle').innerHTML = `
+        <i data-lucide="${c.isCorrect ? 'check-circle' : 'alert-triangle'}" style="width:18px;height:18px;"></i>
+        <span>${c.isCorrect ? 'Calificación Correcta de la JRV' : 'Calificación Incorrecta'}</span>`;
+      $('ballotFeedbackRationale').textContent = c.rationale;
+      $('ballotFeedbackLegal').textContent = `Fundamentación Legal: ${c.legalRef}`;
+    } else {
+      box.className = 'feedback-box';
+    }
+    icons();
+  }
+
+  const render = () => { renderSelector(); renderCurrent(); };
+
+  $('ballotSelectorBtns').addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-ballot]');
+    if (!btn) return;
+    state.currentBallotIndex = Number(btn.dataset.ballot);   // respuesta inmediata
+    render();
+    send('set_ballot_index', null, state.currentBallotIndex);
+  });
+
+  $('decisionButtonsGrid').addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-category]');
+    if (!btn) return;
+    const b = ballots[state.currentBallotIndex];
+    if (await send('answer_ballot', b.id, btn.dataset.category)) {
+      render();
+      window.JRV.updateScore();
+    }
+  });
+
+  window.JRV.renderBallots = render;
+})();
+
+</script>
+      <script>
+/* Calculadora de cuadratura del SEP. */
+(() => {
+  const { icons, total } = window.JRV;
+  const $ = (id) => document.getElementById(id);
+  const num = (id) => parseInt($(id)?.value, 10) || 0;
+
+  const PRESETS = {
+    correct:      { inpPadronFirmas: 482, inpPapeletasSobrantes: 216, inpPapeletasInutilizadas: 2, inpVotosValidos: 465, inpVotosNulos: 11, inpVotosAbstencion: 4, inpVotosImpugnados: 2 },
+    inconsistent: { inpPadronFirmas: 480, inpPapeletasSobrantes: 215, inpPapeletasInutilizadas: 0, inpVotosValidos: 470, inpVotosNulos: 10, inpVotosAbstencion: 5, inpVotosImpugnados: 0 },
+  };
+
+  function calculate() {
+    const padron = num('inpPadronFirmas');
+    const totalUrna = num('inpVotosValidos') + num('inpVotosNulos') + num('inpVotosAbstencion') + num('inpVotosImpugnados');
+    const diff = totalUrna - padron;
+    const inventario = totalUrna + num('inpPapeletasSobrantes') + num('inpPapeletasInutilizadas');
+
+    $('dispTotalUrna').textContent = totalUrna;
+    $('dispTotalPadron').textContent = padron;
+    $('dispDiffUrnaPadron').textContent = diff > 0 ? `+${diff}` : `${diff}`;
+    $('dispDiffUrnaPadron').style.color = diff === 0 ? 'var(--primary)' : 'var(--error)';
+    $('dispInventarioGlobal').textContent = `${inventario} / ${total}`;
+    $('dispInventarioGlobal').style.color = inventario === total ? 'var(--primary)' : 'var(--error)';
+
+    const badge = $('cuadraturaBadgeDisplay');
+    if (diff === 0 && inventario === total) {
+      badge.className = 'balance-badge balanced';
+      badge.innerHTML = `
+        <div style="display:flex;align-items:center;gap:var(--space-xs);">
+          <i data-lucide="check-circle-2" style="width:20px;height:20px;"></i>
+          <span style="font-size:1.05rem;">CUADRATURA VÁLIDA DEL SISTEMA</span>
+        </div>
+        <span style="font-size:.85rem;font-weight:400;">Las papeletas en urna (${totalUrna}) coinciden exactamente con el padrón de firmas (${padron}) y la suma global totaliza ${total} papeletas. El SEP habilita la generación del acta oficial.</span>`;
+    } else {
+      const detail = [];
+      if (diff !== 0) detail.push(`Diferencia de Urna vs Padrón: ${diff > 0 ? '+' : ''}${diff}`);
+      if (inventario !== total) detail.push(`Inventario global suma ${inventario} (debe ser exactamente ${total})`);
+      badge.className = 'balance-badge discrepancy';
+      badge.innerHTML = `
+        <div style="display:flex;align-items:center;gap:var(--space-xs);">
+          <i data-lucide="alert-octagon" style="width:20px;height:20px;"></i>
+          <span style="font-size:1.05rem;">INCONSISTENCIA MATEMÁTICA DETECTADA</span>
+        </div>
+        <span style="font-size:.85rem;font-weight:400;">${detail.join('. ')}. La JRV debe verificar el conteo físico de papeletas sobrantes y en urna antes de emitir el acta.</span>`;
+    }
+    icons();
+  }
+
+  const panel = $('panel-cuadratura');
+  panel.addEventListener('input', (ev) => { if (ev.target.matches('input[type="number"]')) calculate(); });
+  panel.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('[data-preset]');
+    if (!btn) return;
+    Object.entries(PRESETS[btn.dataset.preset] ?? PRESETS.inconsistent).forEach(([id, v]) => ($(id).value = v));
+    calculate();
+  });
+
+  window.JRV.calcCuadratura = calculate;
+})();
+
+</script>
+      <script>
+/* Puntaje global, constancia, nombre del participante y reinicio. */
+(() => {
+  const J = window.JRV;
+  const { state, scenarios, ballots } = J;
+  const $ = (id) => document.getElementById(id);
+
+  function updateScore() {
+    const solved = Object.values(state.solvedScenarios);
+    const classified = Object.values(state.classifiedBallots);
+    const okCases = solved.filter((s) => s.isCorrect).length;
+    const okBallots = classified.filter((b) => b.isCorrect).length;
+    const items = scenarios.length + ballots.length;
+    const percent = Math.round(((okCases + okBallots) / items) * 100);
+
+    $('headerScorePercent').textContent = `${percent}%`;
+    $('headerSolvedStats').textContent = `${solved.length} de ${scenarios.length} Casos • ${classified.length} de ${ballots.length} Boletas`;
+    $('certSolvedCount').textContent = `${okCases} / ${scenarios.length}`;
+    $('certBallotsCount').textContent = `${okBallots} / ${ballots.length}`;
+    $('certScorePercent').textContent = `${percent}%`;
+
+    const status = $('certStatusLabel');
+    const answered = solved.length + classified.length;
+    if (percent >= 80 && answered >= Math.ceil(items * 0.85)) {
+      status.textContent = 'Acreditado con Excelencia';
+      status.style.color = 'var(--positive)';
+    } else if (percent >= 60) {
+      status.textContent = 'Aprobado Básico';
+      status.style.color = 'var(--primary)';
+    } else {
+      status.textContent = 'En Progreso';
+      status.style.color = 'var(--warning)';
+    }
+  }
+
+  function paintName() {
+    const name = state.studentName;
+    $('certNameInline').textContent = name || 'el usuario';
+    const printName = $('certNamePrint');
+    printName.textContent = name;
+    printName.hidden = !name;
+  }
+
+  function showName() {
+    $('studentName').value = state.studentName;
+    paintName();
+  }
+
+  let timer;
+  $('studentName').addEventListener('input', (ev) => {
+    state.studentName = ev.target.value.trim().slice(0, 80);
+    paintName();
+    clearTimeout(timer);
+    timer = setTimeout(() => J.send('set_name', null, state.studentName), 600);
+  });
+
+  document.querySelector('[data-action="print"]').addEventListener('click', () => window.print());
+  document.querySelector('[data-action="reset"]').addEventListener('click', async () => {
+    if (!confirm('¿Desea restablecer todas las respuestas y comenzar de nuevo el entrenamiento?')) return;
+    if (await J.send('reset')) {
+      J.renderScenarios();
+      J.renderBallots();
+      updateScore();
+    }
+  });
+
+  $('certDate').textContent = new Date().toLocaleDateString('es-SV');
+
+  J.updateScore = updateScore;
+  J.showName = showName;
+})();
+
+</script>
+      <script>
+/* Arranque. Los scripts van con "defer": el DOM ya está listo. */
+(() => {
+  const J = window.JRV;
+  J.renderScenarios();
+  J.renderBallots();
+  J.calcCuadratura();
+  J.updateScore();
+  J.showName();
+  J.switchTab(location.hash.slice(1) || 'casos');
+  // Lucide carga con defer: si aún no estaba listo, pinta los iconos al terminar la página.
+  window.addEventListener('load', J.icons);
+})();
+
+</script>
+  </body>
+</html>
